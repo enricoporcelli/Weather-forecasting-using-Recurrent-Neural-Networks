@@ -18,6 +18,10 @@ To better understand their behaviour, they have been tested on input sequences o
 
 ## Results
 I will report only a subset of the results due to the high number of graphs that have been generated for this study, for a complete comparison please refer to the report presented in this directory.
-<p align="center"><img src="https://user-images.githubusercontent.com/104196258/229573210-241a660a-a8f0-45b1-b3b9-03a6fc6be64d.png" width="700">
+<p align="center"><img src="https://user-images.githubusercontent.com/104196258/229577830-355a9891-2b6e-491f-819d-5e39081640cf.png" width="700">
+<p align="center"><img src="https://user-images.githubusercontent.com/104196258/229577846-f312cf9b-f355-4d99-a5b1-13032143b907.png" width="700">
 
-
+## Skills Acquired
+![Tensorflow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
+![R](https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white)
+![Python](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
