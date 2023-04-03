@@ -26,7 +26,7 @@ I will report only a subset of the results due to the high number of graphs that
 ![R](https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white)
 ![ARIMA](https://user-images.githubusercontent.com/104196258/229590486-6c208f49-fecf-4b1d-8954-cdca575931c4.svg)
 ![Python](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
-![sklearn](https://user-images.githubusercontent.com/104196258/229583604-78e5e360-5a54-4530-997a-b022f798e2d0.svg)![ARIMA](https://user-
+![sklearn](https://user-images.githubusercontent.com/104196258/229583604-78e5e360-5a54-4530-997a-b022f798e2d0.svg)
 ![numpy](https://user-images.githubusercontent.com/104196258/229590239-8c7d67e1-1f19-4e87-962c-30b20dd967af.svg)
 ![pandas](https://user-images.githubusercontent.com/104196258/229590240-601a1dac-f88a-4b61-848d-02e02b8c73c0.svg)
 ![seaborn](https://user-images.githubusercontent.com/104196258/229590242-678704f4-330b-48dc-8d37-fa4c766e03b6.svg)
