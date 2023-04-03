@@ -2,7 +2,7 @@
 
 ## Introduction 
 This repository contains the material for my Bachelor's thesis titled "Weather forecasting using Recurrent Neural Networks" completed between October 2020 and March 2021 at the University of Glasgow. It is important to note that this README file plays the role of a summary of the thesis. In order to allow the reader to delve into more details I have uploaded the complete .pdf report among the files of this repository. 
-A special thank you goes to to professor [Vladislav Vyshemirsky](https://scholar.google.co.uk/citations?user=trgOvPoAAAAJ&hl=en), my thesis supervisor.
+A special thank you goes to professor [Vladislav Vyshemirsky](https://scholar.google.co.uk/citations?user=trgOvPoAAAAJ&hl=en), my thesis supervisor.
 
 ## Framework
 The aim of this project is to perform time series prediction and to compare the performances of Recurrent Neural Networks (RNNs) with the ones obtained by different ARIMA models. The dataset on which this thesis is built upon is the [Jena Climate Dataset](https://www.kaggle.com/datasets/mnassrib/jena-climate), which contains weather data recorded in Jena, Germany, every 10 minutes from the start of 2009 until the end of 2016. The variable on which this time series forecasting will focus is the Temperature variable.
