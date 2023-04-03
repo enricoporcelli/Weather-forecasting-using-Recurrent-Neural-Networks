@@ -1,1 +1,427 @@
+#R script for ARIMA predictions
+library(vars)
+library(mFilter)
+library(tseries)
+library(TSstudio)
+library(forecast)
+library(tidyverse)
 
+data.reduced <- read.csv("Dataset_modified_16.csv")
+
+#Creating train, validation and test set
+
+train_df <- data.reduced[1:floor(0.7*length(data.reduced$T..degC.)),]
+val_df <- data.reduced[floor(0.7*length(data.reduced$T..degC.)):floor(0.9*length(data.reduced$T..degC.)),]
+test_df <- data.reduced[(floor(0.9*length(data.reduced$T..degC.))+1):length(data.reduced$T..degC.),]
+
+MSE_baseline_single_24_val <- c()
+MSE_baseline_single_24_test <- c()
+
+MSE_baseline_multiple_24_val <- c()
+MSE_baseline_multiple_24_test <- c()
+
+#24h input
+for(h in 1:24){
+  MSE <- c()
+  for(i in 1:(length(val_df$T..degC.)-49)){
+      MSE[i] <- 1/2 * ((val_df$T..degC.[i+23] - val_df$T..degC.[i+23+h])^2)  
+  }
+  
+  MSE_baseline_single_24_val[h] <- mean(MSE)
+  
+  MSE <- c()
+  for(i in 1:(length(test_df$T..degC.)-49)){
+      MSE[i] <- 1/2 * ((test_df$T..degC.[i+23] - test_df$T..degC.[i+23+h])^2)
+  }
+  
+  MSE_baseline_single_24_test[h] <- mean(MSE)
+  
+  print(h)
+}
+MSE_baseline_single_24_val
+MSE_baseline_single_24_test
+
+
+
+for(h in 1:24){
+  MSE <- c()
+  for(i in 1:(length(val_df$T..degC.)-49)){
+    MSE[i] <- sum(1/2 * ((val_df$T..degC.[(i+24):(i+23+h)] - val_df$T..degC.[i+23])^2))  
+  }
+  
+  MSE_baseline_multiple_24_val[h] <- mean(MSE / h)
+  
+  MSE <- c()
+  for(i in 1:(length(test_df$T..degC.)-49)){
+    MSE[i] <- sum(1/2 * ((test_df$T..degC.[(i+24):(i+23+h)] - test_df$T..degC.[i+23])^2))
+  }
+  
+  MSE_baseline_multiple_24_test[h] <- mean(MSE / h)
+  
+  print(h)
+}
+
+MSE_baseline_multiple_24_val
+MSE_baseline_multiple_24_test
+
+#48h input
+for(h in 1:24){
+  MSE <- c()
+  for(i in 1:(length(val_df$T..degC.)-73)){
+    MSE[i] <- 1/2 * ((val_df$T..degC.[i+47] - val_df$T..degC.[i+47+h])^2)  
+  }
+  
+  MSE_baseline_single_24_val[h] <- mean(MSE)
+  
+  MSE <- c()
+  for(i in 1:(length(test_df$T..degC.)-73)){
+    MSE[i] <- 1/2 * ((test_df$T..degC.[i+47] - test_df$T..degC.[i+47+h])^2)
+  }
+  
+  MSE_baseline_single_24_test[h] <- mean(MSE)
+  
+  print(h)
+}
+MSE_baseline_single_24_val
+MSE_baseline_single_24_test
+
+
+for(h in 1:24){
+  MSE <- c()
+  for(i in 1:(length(val_df$T..degC.)-73)){
+    MSE[i] <- sum(1/2 * ((val_df$T..degC.[(i+48):(i+47+h)] - val_df$T..degC.[i+47])^2))  
+  }
+  
+  MSE_baseline_multiple_24_val[h] <- mean(MSE / h)
+  
+  MSE <- c()
+  for(i in 1:(length(test_df$T..degC.)-73)){
+    MSE[i] <- sum(1/2 * ((test_df$T..degC.[(i+48):(i+47+h)] - test_df$T..degC.[i+47])^2))
+  }
+  
+  MSE_baseline_multiple_24_test[h] <- mean(MSE / h)
+  
+  print(h)
+}
+
+MSE_baseline_multiple_24_val
+MSE_baseline_multiple_24_test
+
+####1000h input
+for(h in 1:24){
+  MSE <- c()
+  for(i in 1:(length(val_df$T..degC.)-1025)){
+    MSE[i] <- 1/2 * ((val_df$T..degC.[i+999] - val_df$T..degC.[i+999+h])^2)  
+  }
+  
+  MSE_baseline_single_24_val[h] <- mean(MSE)
+  
+  MSE <- c()
+  for(i in 1:(length(test_df$T..degC.)-1025)){
+    MSE[i] <- 1/2 * ((test_df$T..degC.[i+999] - test_df$T..degC.[i+999+h])^2)
+  }
+  
+  MSE_baseline_single_24_test[h] <- mean(MSE)
+  
+  print(h)
+}
+MSE_baseline_single_24_val
+MSE_baseline_single_24_test
+
+for(h in 1:24){
+  MSE <- c()
+  for(i in 1:(length(val_df$T..degC.)-1025)){
+    MSE[i] <- sum(1/2 * ((val_df$T..degC.[(i+1000):(i+999+h)] - val_df$T..degC.[i+999])^2))  
+  }
+  
+  MSE_baseline_multiple_24_val[h] <- mean(MSE / h)
+  
+  MSE <- c()
+  for(i in 1:(length(test_df$T..degC.)-1025)){
+    MSE[i] <- sum(1/2 * ((test_df$T..degC.[(i+1000):(i+999+h)] - test_df$T..degC.[i+999])^2))
+  }
+  
+  MSE_baseline_multiple_24_test[h] <- mean(MSE / h)
+  
+  print(h)
+}
+
+MSE_baseline_multiple_24_val
+MSE_baseline_multiple_24_test
+
+#########################ARIMA models##########################
+
+MSE_hourly_val <- c()
+MSE_hourly_test <- c()
+MSE_multiple_hourly_val <- c()
+MSE_multiple_hourly_test <- c()
+
+MSE_hourly_val_48 <- c()
+MSE_hourly_test_48 <- c()
+MSE_multiple_hourly_val_48 <- c()
+MSE_multiple_hourly_test_48 <- c()
+
+#Creating the ARIMA models using auto.arima function from forecast library
+
+# 24h window of inputs
+
+my_list_val <- list()
+
+for(i in 1:(length(val_df$T..degC.)-25)){
+  
+  T..degC. <- ts(val_df$T..degC.[i:(i+23)])
+  my_list_val[[i]] <- auto.arima(T..degC.)
+  print(i)
+  
+}
+
+my_list_test <- list()
+
+for(i in 1:(length(test_df$T..degC.)-25)){
+  
+  T..degC. <- ts(test_df$T..degC.[i:(i+23)])
+  my_list_test[[i]] <- auto.arima(T..degC.)
+  print(i)
+  
+}
+
+############################################################
+# 48h window of inputs
+
+my_list_val_48 <- list()
+
+for(i in 1:(length(val_df$T..degC.)-49)){
+  
+  T..degC. <- ts(val_df$T..degC.[i:(i+47)])
+  my_list_val_48[[i]] <- auto.arima(T..degC.)
+  print(i)
+  
+}
+
+my_list_test_48 <- list()
+
+for(i in 1:(length(test_df$T..degC.)-49)){
+  
+  T..degC. <- ts(test_df$T..degC.[i:(i+47)])
+  my_list_test_48[[i]] <- auto.arima(T..degC.)
+  print(i)
+  
+}
+
+###############################################################################
+# Prediction for h hours into the future, given a 24h window of inputs.
+# This is the loss function considering just one prediction, the one h hours
+# into the future.
+
+for(h in 1:24){
+   print(h)
+   MSE_val <- c(length = (length(my_list_val)))
+
+   for(i in 1: (length(my_list_val)-(h+1))){
+  
+       pred <- forecast(my_list_val[[i]], h=h)
+       MSE_val[i] <- 1/2 * (pred$mean[h] - val_df$T..degC.[i+(h+23)])^2 
+   }
+
+   MSE_test <- c(length = (length(my_list_test)))
+
+   for(i in 1: (length(my_list_test)-(h+1))){
+  
+       pred <- forecast(my_list_test[[i]], h=h)
+       MSE_test[i] <- 1/2 * (pred$mean[h] - test_df$T..degC.[i+(h+23)])^2 
+   }
+
+   MSE_hourly_val[h] <- sum(MSE_val)/length(MSE_val)
+   MSE_hourly_test[h] <- sum(MSE_test)/length(MSE_test)
+
+   print(h)
+}
+
+MSE_hourly_val
+MSE_hourly_test
+
+###################################################################
+
+# Loss function of all predictions untill the h-th hour into the future
+
+for(h in 1:24){
+  print(h)
+  
+  MSE_val <- c(length = (length(my_list_val)))
+  
+  for(i in 1: (length(my_list_val)-(h+1))){
+    
+    pred <- forecast(my_list_val[[i]], h=h)
+    MSE_val[i] <- sum(1/2 * (pred$mean - val_df$T..degC.[(i+24):(i+(h+23))])^2) 
+  }
+  
+  MSE_test <- c(length = (length(my_list_test)))
+  
+  for(i in 1: (length(my_list_test)-(h+1))){
+    
+    pred <- forecast(my_list_test[[i]], h=h)
+    MSE_test[i] <- sum(1/2 * (pred$mean - test_df$T..degC.[(i+24):(i+(h+23))])^2) 
+  }
+  
+  MSE_multiple_hourly_val[h] <- (sum(MSE_val)/h)/length(MSE_val)
+  MSE_multiple_hourly_test[h] <- (sum(MSE_test)/h)/length(MSE_test)
+  
+  print(h)
+}
+
+MSE_multiple_hourly_val
+MSE_multiple_hourly_test
+
+###############################################################################
+# Prediction for h hours into the future, given a 48h window of inputs.
+# This is the loss function considering just one prediction, the one h hours
+# into the future.
+
+for(h in 1:24){
+  print(h)
+  MSE_val_48 <- c(length = (length(my_list_val_48)))
+  
+  for(i in 1: (length(my_list_val_48)-(h+1))){
+    
+    pred <- forecast(my_list_val_48[[i]], h=h)
+    MSE_val_48[i] <- 1/2 * (pred$mean[h] - val_df$T..degC.[i+(h+47)])^2 
+  }
+  
+  MSE_test_48 <- c(length = (length(my_list_test_48)))
+  
+  for(i in 1: (length(my_list_test_48)-(h+1))){
+    
+    pred <- forecast(my_list_test_48[[i]], h=h)
+    MSE_test_48[i] <- 1/2 * (pred$mean[h] - test_df$T..degC.[i+(h+47)])^2 
+  }
+  
+  MSE_hourly_val_48[h] <- sum(MSE_val_48)/length(MSE_val_48)
+  MSE_hourly_test_48[h] <- sum(MSE_test_48)/length(MSE_test_48)
+  
+  print(h)
+}
+
+MSE_hourly_val_48
+MSE_hourly_test_48
+
+###################################################################
+# Loss function of all predictions untill the h-th hour into the future
+
+
+for(h in 21:24){
+  print(h)
+  
+  MSE_val_48 <- c(length = (length(my_list_val_48)))
+  
+  for(i in 1: (length(my_list_val_48)-(h+1)-24)){
+    
+    pred <- forecast(my_list_val_48[[i]], h=h)
+    MSE_val_48[i] <- sum(1/2 * (pred$mean - val_df$T..degC.[(i+48):(i+(h+47))])^2) 
+  }
+  
+  MSE_test_48 <- c(length = (length(my_list_test_48)))
+  
+  for(i in 1: (length(my_list_test_48)-(h+1)-24)){
+    
+    pred <- forecast(my_list_test_48[[i]], h=h)
+    MSE_test_48[i] <- sum(1/2 * (pred$mean - test_df$T..degC.[(i+48):(i+(h+47))])^2) 
+  }
+  
+  MSE_multiple_hourly_val_48[h] <- (sum(MSE_val_48)/h)/length(MSE_val_48)
+  MSE_multiple_hourly_test_48[h] <- (sum(MSE_test_48)/h)/length(MSE_test_48)
+  
+  print(h)
+}
+
+MSE_multiple_hourly_val_48
+MSE_multiple_hourly_test_48
+
+
+
+
+# 1000h window of inputs
+
+my_list_val_1000 <- list()
+
+for(i in 1:(length(val_df$T..degC.)-1025)){
+  
+  T..degC. <- ts(val_df$T..degC.[i:(i+999)])
+  my_list_val_1000[[i]] <- auto.arima(T..degC.)
+  print(i)
+  
+}
+
+my_list_test_1000 <- list()
+
+for(i in 1:(length(test_df$T..degC.)-1025)){
+  
+  T..degC. <- ts(test_df$T..degC.[i:(i+999)])
+  my_list_test_1000[[i]] <- auto.arima(T..degC.)
+  print(i)
+  
+}
+
+MSE_val_1000 <-c()
+MSE_test_1000 <- c()
+MSE_hourly_val_1000 <- c()
+MSE_hourly_test_1000 <- c()
+
+#Single prediction
+for(h in 1:24){
+  print(h)
+  MSE_val_1000 <- c(length = (length(my_list_val_1000)))
+  
+  for(i in 1: (length(my_list_val_1000)-(h+1))){
+    
+    pred <- forecast(my_list_val_1000[[i]], h=h)
+    MSE_val_1000[i] <- 1/2 * (pred$mean[h] - val_df$T..degC.[i+(h+999)])^2 
+  }
+  
+  MSE_test_1000 <- c(length = (length(my_list_test_1000)))
+  
+  for(i in 1: (length(my_list_test_1000)-(h+1))){
+    
+    pred <- forecast(my_list_test_1000[[i]], h=h)
+    MSE_test_1000[i] <- 1/2 * (pred$mean[h] - test_df$T..degC.[i+(h+999)])^2 
+  }
+  
+  MSE_hourly_val_1000[h] <- sum(MSE_val_1000)/length(MSE_val_1000)
+  MSE_hourly_test_1000[h] <- sum(MSE_test_1000)/length(MSE_test_1000)
+  
+  print(h)
+}
+
+MSE_hourly_val_1000
+MSE_hourly_test_1000
+
+#Series prediction
+MSE_multiple_hourly_val_1000 <- c()
+MSE_multiple_hourly_test_1000 <- c()
+
+for(h in 15:24){
+  print(h)
+  
+  MSE_val_1000 <- c(length = (length(my_list_val_1000)))
+  
+  for(i in 1: (length(my_list_val_1000)-(h+1)-24)){
+    
+    pred <- forecast(my_list_val_1000[[i]], h=h)
+    MSE_val_1000[i] <- sum(1/2 * (pred$mean - val_df$T..degC.[(i+1000):(i+(h+999))])^2) 
+  }
+  
+  MSE_test_1000 <- c(length = (length(my_list_test_1000)))
+  
+  for(i in 1: (length(my_list_test_1000)-(h+1)-24)){
+    
+    pred <- forecast(my_list_test_1000[[i]], h=h)
+    MSE_test_1000[i] <- sum(1/2 * (pred$mean - test_df$T..degC.[(i+1000):(i+(h+999))])^2) 
+  }
+  
+  MSE_multiple_hourly_val_1000[h] <- (sum(MSE_val_1000)/h)/length(MSE_val_1000)
+  MSE_multiple_hourly_test_1000[h] <- (sum(MSE_test_1000)/h)/length(MSE_test_1000)
+  
+  print(h)
+}
+
+MSE_multiple_hourly_val_1000
+MSE_multiple_hourly_test_1000
