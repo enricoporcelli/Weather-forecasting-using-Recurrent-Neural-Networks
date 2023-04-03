@@ -24,7 +24,7 @@ I will report only a subset of the results due to the high number of graphs that
 ## Technical Skills and Tools Applied
 ![Tensorflow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
 ![R](https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white)
-![ARIMA](https://user-images.githubusercontent.com/104196258/229590486-6c208f49-fecf-4b1d-8954-cdca575931c4.svg)
+![TSstudio](https://user-images.githubusercontent.com/104196258/229591739-b308adbf-566e-49e4-b27f-adc26e3ddccd.svg)
 ![Python](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
 ![numpy](https://user-images.githubusercontent.com/104196258/229590972-a2ade5fd-7238-45a3-be42-fbe979916f2d.svg)
 ![pandas](https://user-images.githubusercontent.com/104196258/229590976-d3f2ab30-4199-4787-a6dc-c3dec7f3dbf4.svg)
